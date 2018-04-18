@@ -16,11 +16,17 @@ def notDone():
     messagebox.showwarning('Info', 'Working on it')
 
 
+def onClosing():
+    """
+        ask before leaving the application 
+    """
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        w.destroy()
+
 
 class Application(Tk):
 
     contentIsChanged = False
-
 
     def about(self):
         """
@@ -40,7 +46,7 @@ class Application(Tk):
              this method implements open file functionality
         """
         if self.contentIsChanged:
-            self.zapiszPlikJako()
+            self.saveFileAs()
 
         self.tb.delete(1.0, END)
         self.fn = None
@@ -91,7 +97,7 @@ class Application(Tk):
     def add_date(self):
         """
              this method adds date signature in:
-             dd/mm/yyyy
+             dd/mm/yyyy format
         """
         full_date = time.localtime()
         day = str(full_date.tm_mday)
@@ -137,7 +143,6 @@ class Application(Tk):
 
         # Edit pulldown menu
         main_menu = Menu(menubar, tearoff=0)
-        #mm.add_command(label="Znajdź", command=makieta)
         main_menu.add_command(label="Find", command=notDone)
         menubar.add_cascade(label="Edit", menu=main_menu)
 
@@ -160,9 +165,6 @@ class Application(Tk):
         main_menu.add_command(label="Insert signature", command=self.add_signature)
         menubar.add_cascade(label="Insert", menu=main_menu)
 
-        #mm = Menu(menubar, tearoff=0)
-
-
 
         # display the menu
         self.config(menu=menubar)
@@ -176,7 +178,6 @@ class Application(Tk):
         self.sb = Entry(self, relief = SUNKEN)
         self.sb.pack(expand = 0, fill = Y, side = BOTTOM)
 
-        
     
         self.tb = Text(self, font=("courier new", 16))
 
@@ -197,8 +198,6 @@ class Application(Tk):
 
 if __name__ == '__main__':
 
-
-    
     w = Application('Edit')
    
     try:
@@ -206,6 +205,8 @@ if __name__ == '__main__':
 
         w.call('wm', 'attributes', '.', '-topmost', '1')
         w.geometry('1000x600+100+100')
+
+        w.protocol("WM_DELETE_WINDOW", onClosing)
         w.mainloop()
 
     except:
