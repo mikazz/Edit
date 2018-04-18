@@ -59,6 +59,7 @@ class Application(Tk):
         """
         if self.contentIsChanged:
             self.saveFileAs()
+
         dlg = filedialog.Open(initialfile = self.fn)
         f = dlg.show()
         if len(f):
@@ -84,11 +85,11 @@ class Application(Tk):
              this method implements save file functionality
         """
         if (self.fn):
-            plik = open(self.fn, 'w')
+            file = open(self.fn, 'w')
             #plik.write(self.tb.get(1.0, END).encode('utf-8'))
-            plik.write(self.tb.get(1.0, END))
+            file.write(self.tb.get(1.0, END))
 
-            plik.close()
+            file.close()
             self.sb.config(text = 'Saved ' + self.fn)
         else:
             self.saveFileAs()
