@@ -1,7 +1,18 @@
 # coding: utf-8
 
 # Codes
-GREETING_MESSAGE = "Hello World"
+GREETING_MESSAGE = """1
+2
+3
+Hello
+HelloWORLD
+HelloWorld
+Hello World Hello
+DO IT Hello
+Hello hELLO
+
+Hello
+"""
 SIGNATURE_TXT_NOT_FOUND_MESSAGE = "Please be sure that the file you want to open exists and that it is in the same folder of this editor."
 ABOUT_APP_MESSAGE = "Tkinter App"
 
@@ -15,13 +26,14 @@ PULLDOWN_ACTIVEFOREGROUND_COLOR = "#ffffff" # White
 # Text Widget colors
 DEFAULT_TEXT_COLOR_BACKGROUND = "#111111" # Dark grey
 DEFAULT_TEXT_COLOR_FOREGROUND = "#ffffff" # White
-
+TEXT_FOUND_COLOR_FOREGROUND = "red"
+TEXT_FOUND_COLOR_BACKGROUND = "black"
 
 from tkinter import *
 from tkinter import filedialog, messagebox
 
 import time
-
+import re
 
 
 def notDone():
@@ -34,6 +46,21 @@ def onClosing():
     """
     if messagebox.askokcancel("Quit", "Do you want to quit?"):
         w.destroy()
+
+
+class popupWindow(object):
+    def __init__(self, master):
+        top=self.top=Toplevel(master)
+        self.l=Label(top,text="Find")
+        self.l.pack()
+        self.e=Entry(top)
+        self.e.pack()
+        self.b=Button(top,text='Ok',command=self.cleanup)
+        self.b.pack()
+    def cleanup(self):
+        self.value=self.e.get()
+        self.top.destroy()
+
 
 
 class Application(Tk):
@@ -108,6 +135,14 @@ class Application(Tk):
             self.saveFileAs()
 
 
+    def countLetters(self):
+        """
+             this method implements 'Count Letters' functionality
+        """
+        lettersNumber = sum(c != ' ' for c in self.tb.get(1.0, END))
+        self.sb.config(text = 'Number of letters: ' + str(lettersNumber-1))
+
+
     def add_date(self):
         """
              this method adds date signature in:
@@ -133,6 +168,7 @@ class Application(Tk):
             MESSAGE = SIGNATURE_TXT_NOT_FOUND_MESSAGE
             messagebox.showwarning("\"signature.txt\" not found.", MESSAGE)
 
+
     def changeColorScheme(self):
         """
             defining new Text widget
@@ -143,13 +179,46 @@ class Application(Tk):
         self.tb["bg"] = col_bg
         self.tb["fg"] = col_fg
         #self.insert(END, "")
-        self.sb.config(text = 'Color scheme changed')
-        
-##
-##    def changeColorScheme(self):
-##        col_bg = "red"
-##        col_fg = "black"
-##        buildnew_textwidget(col_bg, col_fg)
+        self.sb.config(text = "Color scheme changed")
+
+    def popup(self):
+        self.w=popupWindow(self.master)
+        #self.b["state"] = "disabled" 
+        #self.master.wait_window(self.w.top)
+        #self.b["state"] = "normal"
+
+    def entryValue(self):
+        return self.w.value
+
+
+    def searchEngine(self):
+        # Remove found tag
+        self.tb.tag_remove('found', '1.0', END)
+        search = "Hello"
+
+        list_of_words = re.findall(r"\b" + search + r"\b", self.tb.get(1.0, END))
+        print(list_of_words)
+
+        for word in list_of_words:
+            idx = '1.0'
+            while idx:
+                idx = self.tb.search(word, idx, nocase=1, stopindex=END)
+                if idx:
+                    lastidx = '%s+%dc' % (idx, len(word))
+                    self.tb.tag_add('found', idx, lastidx)
+                    idx = lastidx
+
+        # Define found tag for Text Widget
+        self.tb.tag_config('found', foreground=TEXT_FOUND_COLOR_FOREGROUND, background=TEXT_FOUND_COLOR_BACKGROUND)
+
+
+    def replaceAll(self):
+        findtext = str(find.get(1.0, END))
+        replacetext = str(replace.get(1.0, END))
+        alltext = str(text.get(1.0, END))
+        alltext1 = all.replace(findtext, replacetext)
+        text.delete(1.0, END)
+        text.insert("1.0", alltext1)
         
 
     def __init__(self, title):
@@ -175,7 +244,10 @@ class Application(Tk):
 
         # Edit pulldown menu
         main_menu = Menu(menubar, tearoff=0)
-        main_menu.add_command(label="Find", command=notDone)
+        main_menu.add_command(label="Find", command=self.searchEngine)
+        main_menu.add_command(label="Test Find", command=self.popup)
+        main_menu.add_command(label="Find and Replace", command=self.replaceAll)
+        main_menu.add_command(label="Count Letters", command=self.countLetters)
         menubar.add_cascade(label="Edit", menu = main_menu)
 
 
