@@ -1,8 +1,20 @@
 # coding: utf-8
 
+# Codes
 GREETING_MESSAGE = "Hello World"
 SIGNATURE_TXT_NOT_FOUND_MESSAGE = "Please be sure that the file you want to open exists and that it is in the same folder of this editor."
 ABOUT_APP_MESSAGE = "Tkinter App"
+
+# Window colors
+PULLDOWN_BACKGROUND_COLOR = "black"
+PULLDOWN_FOREGROUND_COLOR = "#D9CB9E"
+PULLDOWN_ACTIVEBACKGROUND_COLOR = "#D9CB9E"
+PULLDOWN_ACTIVEFOREGROUND_COLOR = "#374140"
+
+# Text Widget colors
+DEFAULT_TEXT_COLOR_BACKGROUND = "#111111" # Dark grey
+DEFAULT_TEXT_COLOR_FOREGROUND = "#ffffff" # White
+
 
 from tkinter import *
 from tkinter import filedialog, messagebox
@@ -11,17 +23,16 @@ import time
 
 
 
-
 def notDone():
     messagebox.showwarning('Info', 'Working on it')
 
 
-def onClosing():
-    """
-        ask before leaving the application 
-    """
-    if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        w.destroy()
+##def onClosing():
+##    """
+##        ask before leaving the application 
+##    """
+##    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+##        w.destroy()
 
 
 class Application(Tk):
@@ -43,7 +54,7 @@ class Application(Tk):
 
     def newFile(self):
         """
-             this method implements open file functionality
+             this method implements 'new file' functionality
         """
         if self.contentIsChanged:
             self.saveFileAs()
@@ -55,7 +66,7 @@ class Application(Tk):
 
     def openFile(self):
         """
-             this method implements open file functionality
+             this method implements 'open file' functionality
         """
         if self.contentIsChanged:
             self.saveFileAs()
@@ -71,7 +82,7 @@ class Application(Tk):
 
     def saveFileAs(self):
         """
-             this method implements save file as functionality
+             this method implements 'save file as' functionality
         """
         dlg = filedialog.SaveAs(initialfile = self.fn)
         f = dlg.show()
@@ -82,7 +93,7 @@ class Application(Tk):
 
     def saveFile(self):
         """
-             this method implements save file functionality
+             this method implements 'save file' functionality
         """
         if (self.fn):
             file = open(self.fn, 'w')
@@ -120,6 +131,24 @@ class Application(Tk):
             MESSAGE = SIGNATURE_TXT_NOT_FOUND_MESSAGE
             messagebox.showwarning("\"signature.txt\" not found.", MESSAGE)
 
+    def changeColorScheme(self):
+        """
+            defining new Text widget
+        """
+        col_bg = "black"
+        col_fg = "white"
+
+        self.tb["bg"] = col_bg
+        self.tb["fg"] = col_fg
+        #self.insert(END, "")
+        self.sb.config(text = 'Color scheme changed')
+        
+##
+##    def changeColorScheme(self):
+##        col_bg = "red"
+##        col_fg = "black"
+##        buildnew_textwidget(col_bg, col_fg)
+        
 
     def __init__(self, title):
         Tk.__init__(self)
@@ -145,7 +174,7 @@ class Application(Tk):
         # Edit pulldown menu
         main_menu = Menu(menubar, tearoff=0)
         main_menu.add_command(label="Find", command=notDone)
-        menubar.add_cascade(label="Edit", menu=main_menu)
+        menubar.add_cascade(label="Edit", menu = main_menu)
 
 
         # Help pulldown menu
@@ -153,10 +182,11 @@ class Application(Tk):
         main_menu.add_command(label="About", command=self.about)
         menubar.add_cascade(label="Help", menu=main_menu)
 
-
+        
         # Options pulldown menu
-        main_menu = Menu(menubar, tearoff=0)
-        main_menu.add_command(label="Always on top", command=self.topWindow)   
+        main_menu = Menu(menubar, tearoff=0, background=PULLDOWN_BACKGROUND_COLOR, foreground=PULLDOWN_FOREGROUND_COLOR, activebackground=PULLDOWN_ACTIVEBACKGROUND_COLOR, activeforeground=PULLDOWN_ACTIVEFOREGROUND_COLOR)
+        main_menu.add_command(label="Always on top", command=self.topWindow)
+        main_menu.add_command(label="Colorscheme", command=self.changeColorScheme)
         menubar.add_cascade(label="Options", menu=main_menu)
 
 
@@ -174,21 +204,17 @@ class Application(Tk):
         self.sb = Label(self, relief = FLAT, anchor = W)
         self.sb.pack(expand = 0, fill = X, side = BOTTOM)
 
-
         # Bottom bar
-        self.sb = Entry(self, relief = SUNKEN)
-        self.sb.pack(expand = 0, fill = Y, side = BOTTOM)
+        #self.sb = Entry(self, relief = SUNKEN)
+        #self.sb.pack(expand = 0, fill = Y, side = BOTTOM)
 
-    
-        self.tb = Text(self, font=("courier new", 16))
-
-             
+        # Text widget area
+        self.tb = Text(self, font=("courier new", 16), bg=DEFAULT_TEXT_COLOR_BACKGROUND, fg=DEFAULT_TEXT_COLOR_FOREGROUND, bd=0)
         self.tb.pack(expand=1, fill = BOTH)
         self.tb.insert(END, GREETING_MESSAGE)
 
-    
-        self.fn = None
 
+        self.fn = None
         self.sb.config(text = 'Ready')
 
 
@@ -202,15 +228,18 @@ if __name__ == '__main__':
     w = Application('Edit')
    
     try:
+        # About application popup
         #w.about()
 
         w.call('wm', 'attributes', '.', '-topmost', '1')
         w.geometry('1000x600+100+100')
+        #w.configure(background='black')
 
+        # Ask before leaving the application
         w.protocol("WM_DELETE_WINDOW", onClosing)
         w.mainloop()
+        logger.info("Loaded")
 
-    except:
-        pass
-    
+    except BaseException as e:
+        print(e)
 
