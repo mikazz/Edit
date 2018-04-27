@@ -7,8 +7,9 @@ ABOUT_APP_MESSAGE = "Tkinter App"
 
 # Window colors
 PULLDOWN_BACKGROUND_COLOR = "black"
-PULLDOWN_FOREGROUND_COLOR = "#D9CB9E"
-PULLDOWN_ACTIVEBACKGROUND_COLOR = "#D9CB9E"
+PULLDOWN_FOREGROUND_COLOR = "#2d2d2d"
+
+PULLDOWN_ACTIVEBACKGROUND_COLOR = "#181818"
 PULLDOWN_ACTIVEFOREGROUND_COLOR = "#374140"
 
 # Text Widget colors
@@ -27,12 +28,12 @@ def notDone():
     messagebox.showwarning('Info', 'Working on it')
 
 
-##def onClosing():
-##    """
-##        ask before leaving the application 
-##    """
-##    if messagebox.askokcancel("Quit", "Do you want to quit?"):
-##        w.destroy()
+def onClosing():
+    """
+        ask before leaving the application 
+    """
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        w.destroy()
 
 
 class Application(Tk):
@@ -89,6 +90,7 @@ class Application(Tk):
         if len(f):
             self.fn = f
             self.saveFile()
+            self.sb.config(text = 'Saved as ' + self.fn)
 
 
     def saveFile(self):
@@ -238,7 +240,6 @@ if __name__ == '__main__':
         # Ask before leaving the application
         w.protocol("WM_DELETE_WINDOW", onClosing)
         w.mainloop()
-        logger.info("Loaded")
 
     except BaseException as e:
         print(e)
