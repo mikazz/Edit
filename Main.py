@@ -2,7 +2,7 @@
 
 __author__ = 'mikazz'
 __version__ = 'v1.1.1 (Alpha)'
-__license__ = 'free'
+__license__ = 'All rights reserved'
 
 
 README = """
@@ -52,41 +52,10 @@ View >
     Goto Start Of Line - Goes far left
     Select - Selects lines from : to
     
-
 Terminal >
     Clear Terminal - (Ctrl + Del) - Clears the Terminal
     Clear Terminal on run - (T/F) - Clears the Terminal when new run is initialized
     Show exit codes (T/F) - Shows exit codes when run is initialized
-
-
-# Known issues:
-
--Kiedy wklejam kod nie dziala highlighting
-
-
--dodac opcje hide do ppm terminala?
-
-# TODO:
-# sprawdzic czy to mozliwe i dodac obsluge command line arguments: np edit.py <plik do otwarcia> 
-# chyba nie, bo jak wtedy uruchamiac wedlug ./? bez argumentow
-#
-# 
-# naprawic select lines from: to: / (dla danych wierszy i,j) zaznacza od i do j-1 (dziwne) 
-#
-# - dodac find and replace
-# - lepszy find zrobic
-
--dodac odswiezanie do directory browser
-
--dodac bindy do VIMa
-
--przy paste nie dziala kolorowanie skladni
-
--dodac import from file
-
-
-pozycja kursora X,Y
-https://mail.python.org/pipermail/tkinter-discuss/2009-December/002127.html
 
 """
 
