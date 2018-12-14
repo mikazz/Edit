@@ -1,4 +1,5 @@
 # https://github.com/roseman/idle/blob/master/config-keys.def
+# Process finished with exit code 0
 
 __author__ = 'mikazz'
 __version__ = 'v1.1.1 (Alpha)'
