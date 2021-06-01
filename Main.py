@@ -5,6 +5,43 @@ __author__ = 'mikazz'
 __version__ = 'v1.1.1 (Alpha)'
 __license__ = 'All rights reserved'
 
+import time
+import os
+import platform
+import subprocess
+import logging
+
+from tkinter import *
+from tkinter import simpledialog, filedialog, messagebox
+import tkinter as tk
+import tkinter.ttk as ttk
+
+# Code Highlighting
+try:
+    from pygments import lex
+
+except ImportError:
+    pass
+
+# Printing
+try:
+    import cups
+    CUPS_AVAILABLE = True
+except ImportError:
+    CUPS_AVAILABLE = False
+
+try:
+    import WIN32PRINT_AVAILABLE
+    WIN32PRINT_AVAILABLE = True
+except ImportError:
+    WIN32PRINT_AVAILABLE = False
+
+# Setup logging
+logger = logging.getLogger(os.path.basename(__file__))
+logging.basicConfig(level=logging.DEBUG)
+
+# Get system type
+SYSTEMTYPE = platform.system()
 
 README = """
 #
@@ -70,27 +107,27 @@ ABOUT_APP_MESSAGE = "Edit App"
 
 # Window colors
 
-WINDOW_BACKGROUND_COLOR =  "#181818"# change to "yellow" nxt time
+WINDOW_BACKGROUND_COLOR = "#181818"  # Change to "yellow" nxt time
 
-PULLDOWN_BACKGROUND_COLOR = "#181818" # Dark grey
-PULLDOWN_FOREGROUND_COLOR = "#aaaaaa" # Light Grey
-PULLDOWN_ACTIVE_BACKGROUND_COLOR = "#181818" # Dark grey
-PULLDOWN_ACTIVE_FOREGROUND_COLOR = "#ffffff" # White
+PULLDOWN_BACKGROUND_COLOR = "#181818"  # Dark grey
+PULLDOWN_FOREGROUND_COLOR = "#aaaaaa"  # Light Grey
+PULLDOWN_ACTIVE_BACKGROUND_COLOR = "#181818"  # Dark grey
+PULLDOWN_ACTIVE_FOREGROUND_COLOR = "#ffffff"  # White
 CHECKBUTTON_SELECT_COLOR = "#aaaaaa"
 
 TOPBAR_BACKGROUND_COLOR = "#181818" 
-TOPBAR_FOREGROUND_COLOR = "#aaaaaa" # Light Grey
+TOPBAR_FOREGROUND_COLOR = "#aaaaaa"  # Light Grey
 TOPBAR_ACTIVE_BACKGROUND_COLOR = "#181818" 
-TOPBAR_ACTIVE_FOREGROUND_COLOR = "#ffffff" # White
+TOPBAR_ACTIVE_FOREGROUND_COLOR = "#ffffff"  # White
 
 BOTTOMBAR_BACKGROUND_COLOR = "#181818" 
 BOTTOMBAR_FOREGROUND_COLOR = "#aaaaaa" # Light Grey
 BOTTOMBAR_ACTIVE_BACKGROUND_COLOR = "#181818" 
-BOTTOMBAR_ACTIVE_FOREGROUND_COLOR = "#ffffff" # White
+BOTTOMBAR_ACTIVE_FOREGROUND_COLOR = "#ffffff"
 
 # Text Widget colors
-DEFAULT_TEXT_COLOR_BACKGROUND = "#111111" #"#181818" # Dark grey
-DEFAULT_TEXT_COLOR_FOREGROUND = "#ffffff" # White
+DEFAULT_TEXT_COLOR_BACKGROUND = "#111111"
+DEFAULT_TEXT_COLOR_FOREGROUND = "#ffffff"
 TEXT_FOUND_COLOR_FOREGROUND = "red"
 TEXT_FOUND_COLOR_BACKGROUND = "black"
 
@@ -101,7 +138,7 @@ INACTIVE_SELECT_BACKGROUND_COLOR = None
 
 # Command line
 COMMANDLINE_CURSOR_COLOR = "white"
-TERMINAL_BACKGROUND_COLOR = "#0a0a0a" #Dark
+TERMINAL_BACKGROUND_COLOR = "#0a0a0a"  # Dark
 TEXT_ERROR_COLOR_FOREGROUND = "red"
 
 # Line numbers
@@ -110,11 +147,8 @@ LINENUMBERS_COLOR_FOREGROUND = "#aaaaaa"
 SELECTION_LINENUMBERS_COLOR_FOREGROUND = "#ffffff"
 
 # Directory Browser
-DIRECTORY_BROWSER_COLOR_BACKGROUND = "#111111" # Dark grey
-DIRECTORY_BROWSER_COLOR_FOREGROUND = "#ffffff" # White
-
-SNIPPETLIST_COLOR_BACKGROUND = "#111111"
-SNIPPETLIST_COLOR_FOREGROUND = "#ffffff"
+DIRECTORY_BROWSER_COLOR_BACKGROUND = "#111111"  # Dark grey
+DIRECTORY_BROWSER_COLOR_FOREGROUND = "#ffffff"  # White
 
 FONT_TYPE = "courier new"
 DEFAULT_FONT_SIZE = 16
@@ -140,44 +174,6 @@ def main():
 if __name__ == '__main__':
     main()
   """
-
-
-import time
-from datetime import datetime
-
-import re
-import os
-import platform
-import subprocess
-
-from tkinter import *
-from tkinter import simpledialog, filedialog, messagebox
-import tkinter as tk
-import tkinter.ttk as ttk
-
-# Code Highlighting
-try:
-    from pygments import lex
-
-except ImportError:
-    pass
-
-# Printing
-try:
-    import cups
-    CUPS_AVAILABLE = True
-except ImportError:
-    CUPS_AVAILABLE = False
-
-try:
-    import WIN32PRINT_AVAILABLE
-    WIN32PRINT_AVAILABLE = True
-except ImportError:
-    WIN32PRINT_AVAILABLE = False
-
-# Get system type
-SYSTEMTYPE = platform.system()
-
 
 
 
@@ -297,9 +293,9 @@ class PrintDialogWindows(tk.Toplevel):
 
 
 class MyDialog:
-    '''
+    """
         Dialog box
-    '''
+    """
     def __init__(self, parent):
 
         top = self.top = Toplevel(parent)
@@ -501,31 +497,6 @@ class CustomText(tk.Text):
 #Then you prefix the widgets with either tk or ttk :
 # f1 = tk.Frame(..., bg=..., fg=...)
 # f2 = ttk.Frame(..., style=...)
-
-
-
-
-class SystemTerminal(tk.Frame):
-
-    def __init__(self, master):
-        tk.Frame.__init__(self, master)
-
-
-
-##    terminalHeight = 100
-##    terminalWidth = 100
-##
-##    self.systemTerminal = Frame(self, height=terminalHeight, width=terminalWidth)
-##    self.systemTerminal.grid(column=4, row=0, sticky=N+E+S+W)
-##    
-##    wid = self.systemTerminal.winfo_id()
-##    os.system("""xterm -into %d -bg "#181818" -geometry 40x20 -fa "Monospace" -fs 10 &""" % wid)
-
-
-
-
-
-
 
 
 class DirectoryBrowser(tk.Frame):
@@ -963,33 +934,31 @@ class Application(Tk):
         for name in self.fileTemplates:
             self.recentMenu.add_command(label=("{}".format(name) ), command=self.openRecent(name))
 
-            
     def saveFile(self):
         """
             Implements 'save file' functionality
         """
         # If file is not empty
-        if (self.fn):
+        if self.fn:
             file = open(self.fn, 'w')
             file.write(self.tb.get(1.0, END))
 
             file.close()
-            self.labelBar.config(text = 'Saved ' + self.fn)
+            self.labelBar.config(text='Saved ' + self.fn)
             w.title(self.fn)
         else:
             self.saveFileAs()
-
 
     def saveFileAs(self):
         """
             Implements 'save file as' functionality
         """
-        dlg = filedialog.SaveAs(initialfile = self.fn, filetypes = ftypes)
+        dlg = filedialog.SaveAs(initialfile=self.fn, filetypes=ftypes)
         f = dlg.show()
         if len(f):
             self.fn = f
             self.saveFile()
-            self.labelBar.config(text = 'Saved as ' + self.fn)
+            self.labelBar.config(text='Saved as ' + self.fn)
             w.title(self.fn)
 
 
@@ -999,14 +968,13 @@ class Application(Tk):
         """
         if self.auto_save.get() == True:
             
-            w.after(5000, self.autoSave) # time in milliseconds 1000 = 1 sec
-            print("autosaved")
+            w.after(5000, self.autoSave)  # time in milliseconds 1000 = 1 sec
+            logger.debug("Autosave")
             
-            if (self.fn):
+            if self.fn:
                 file = open(self.fn, 'w')
                 file.write(self.tb.get(1.0, END))
                 file.close()
-                
 
                 full_time = time.localtime()
                 hour = str(full_time.tm_hour)
@@ -1079,7 +1047,7 @@ class Application(Tk):
         """
         lettersNumber = sum(c != ' ' for c in self.tb.get(1.0, END))
         lineNumber = int(self.tb.index('end').split('.')[0]) - 1  # returns line count
-        self.labelBar.config(text = "Number of letters: " + str(lettersNumber-1) + " Number of lines: " + str(lineNumber))
+        self.labelBar.config(text="Number of letters: " + str(lettersNumber-1) + " Number of lines: " + str(lineNumber))
 
 
     def insertDate(self):
@@ -1107,35 +1075,6 @@ class Application(Tk):
 
         except IOError:
             self.labelBar.config(text = SIGNATURE_TXT_NOT_FOUND_MESSAGE)
-
-
-    def populateSnippet(self):
-        """
-            Adds snippets from a text file
-        """
-    
-        if str(self.fn).lower().endswith('.py'):
-            interpreter = "python3"
-
-            snippetList = self.snippetListPython
-            print(snippetList)
-
-            for item in snippetList:
-                snippetList.insert(END, item)
-
-
-    def addSnippet(self, event):
-        """
-            Adds snippets from a text file
-        """
-
-        try:
-            print(snippetList)
-            self.tb.insert("insert", snippetList[0][1] + "\n" )
-
-        except IOError:
-            self.labelBar.config("Cant add")
-
 
 
     def _make_blanks(self, n):
@@ -1377,7 +1316,6 @@ class Application(Tk):
             # Define found tag for Text Widget with its colors
             self.tb.tag_config('found', foreground=TEXT_FOUND_COLOR_FOREGROUND, background=TEXT_FOUND_COLOR_BACKGROUND)
 
-
     def executeInTerminal(self, event):
         """
             Execute Commandline in a Terminal
@@ -1394,7 +1332,6 @@ class Application(Tk):
 
         self.cmdLine.delete("1.0", "end-1c") # Remove executed line
         return "break"
-
 
     def runCode(self):
         """
@@ -1442,16 +1379,13 @@ class Application(Tk):
         else:
             interpreter = simpledialog.askstring('Set Interpreter', 'Set the interpreter to run the code', initialvalue='', parent=self)
 
-
         # Clear terminal on new run
         if self.new_run_clean_terminal.get() == True:
             self.clearTerminal()
-  
         else:
             pass
 
-        if  self.show_terminal.get() == False:
-
+        if self.show_terminal.get() == False:
             self.show_terminal.set(True)
             self.cmdLine.grid()
             self.terminal.grid()
@@ -1530,24 +1464,6 @@ class Application(Tk):
         self.terminal.see("insert")
         self.tb.focus_set()
 
-
-
-
-
-##        # Show terminal exit codes
-##        if self.show_terminal_exit_codes.get() == True:
-##
-##            self.terminal.insert(END, "-----------------------" + "\n")
-##            self.terminal.insert(END, "Executed in: " + str(datetime.now() - startTime) + "\n")
-##            self.terminal.insert(END, "Terminated with code: " + str(errcode) + "\n")        
-##        else:
-##            pass
-##
-##        self.terminal.insert(END, out)
-##        self.terminal.insert(END, err)
-##        self.terminal.see("insert")
-##        #self.labelBar.config(text = 'Terminated run of ' + compiledFile)
-##        self.tb.focus_set()
 
 
     def runCodeInSystemTerminal(self):
@@ -1706,7 +1622,7 @@ class Application(Tk):
         from pygments.lexers import TextLexer
         LEXER_TYPE = TextLexer()
 
-        print("checked for lexer")
+        logger.debug("Checked for lexer")
         
         if str(self.fn).lower().endswith('.py'):
             from pygments.lexers import PythonLexer
@@ -1746,13 +1662,12 @@ class Application(Tk):
 
         global LEXER_TYPE
         
-        for token, content in lex(src, LEXER_TYPE ): # i.e PythonLexer()
+        for token, content in lex(src, LEXER_TYPE ):  # i.e PythonLexer()
             self.tb.mark_set(
                 'range_end', 'range_start+{0}c'.format(len(content))
             )
             self.tb.tag_add(str(token), 'range_start', 'range_end')
             self.tb.mark_set('range_start', 'range_end')
-
 
     def gotoTOP(self):
         """
@@ -1763,7 +1678,6 @@ class Application(Tk):
         self.tb.focus_set()
         return "break"
 
-
     def gotoEND(self):
         """
             Jump to the end of file
@@ -1773,26 +1687,23 @@ class Application(Tk):
         self.tb.focus_set()
         return "break"
 
-
     def gotoLine(self):
         """
             Jump to the given line
         """
-        lineNum = simpledialog.askstring('Goto Line', 'Set the line number', initialvalue='', parent=self)
+        line_number = simpledialog.askstring('Goto Line', 'Set the line number', initialvalue='', parent=self)
 
-        if lineNum is not None:
-            self.tb.mark_set("insert", float(lineNum))
+        if line_number is not None:
+            self.tb.mark_set("insert", float(line_number))
             self.tb.see("insert")
             self.tb.focus_set()
-
             # Show selection on given line
-            EOL = str(self.tb.index(tk.INSERT)) + " lineend"
-            self.tb.tag_add(SEL, float(lineNum), EOL )
+            eol = str(self.tb.index(tk.INSERT)) + " lineend"
+            self.tb.tag_add(SEL, float(line_number), eol)
         else:
             pass
 
         return "break"
-
 
     def gotoStartOfLine(self):
         """
@@ -1802,7 +1713,6 @@ class Application(Tk):
         self.tb.mark_set("insert", SOL)
         self.tb.see("insert")
         self.tb.focus_set()
-        
 
     def gotoEndOfLine(self):
         """
@@ -1813,28 +1723,21 @@ class Application(Tk):
         self.tb.see("insert")
         self.tb.focus_set()
 
-
     def selectLines(self):
         """
             Select given lines
         """
-        startLineNum = simpledialog.askstring('Goto Line', 'Set the line number', initialvalue='', parent=self)
-        endLineNum = simpledialog.askstring('Goto Line', 'Set the line number', initialvalue='', parent=self)
+        start_line_num = simpledialog.askstring('Goto Line', 'Set the START line number', initialvalue='', parent=self)
+        end_line_num = simpledialog.askstring('Goto Line', 'Set the STOP line number', initialvalue='', parent=self)
 
-        if startLineNum is not None and endLineNum is not None:
-            self.tb.mark_set("insert", float(startLineNum))
+        if start_line_num is not None and end_line_num is not None:
+            self.tb.mark_set("insert", float(start_line_num))
             self.tb.see("insert")
             self.tb.focus_set()
-
             # Show selection on given line
-            #EOL = str(self.tb.index(tk.INSERT)) + " lineend"
-            
-            self.tb.tag_add(SEL, float(startLineNum), float(endLineNum) )
-        else:
-            pass
+            self.tb.tag_add(SEL, float(start_line_num), float(int(end_line_num) + 1))
 
         return "break"
-
 
     def tab2spaces4(self, event):
         """
@@ -1845,7 +1748,6 @@ class Application(Tk):
         """
         self.tb.insert(self.tb.index("insert"), "    ")
         return "break"
-
 
     def smartReturn(self, event):
         """
@@ -1878,7 +1780,6 @@ class Application(Tk):
             self.db.grid_remove()
             self.labelBar.config(text = "Directory browser disabled")
 
-
     def showTerminal(self):
         """
             Shows / Hides the Terminal
@@ -1900,35 +1801,6 @@ class Application(Tk):
             self.grid_columnconfigure(2, weight=1)
             self.grid_columnconfigure(4, weight=0)
             self.labelBar.config(text = "Terminal disabled")
-
-
-    def showSystemTerminal(self):
-        """
-            Shows / Hides System Terminal
-        """
-        if self.show_system_terminal.get() == True:
-            self.systemTerminal.grid(column=4, row=0, sticky=N+E+S+W)
-
-        else:
-            self.systemTerminal.grid_remove()
-            
-
-
-    def showSnippetList(self):
-        """
-            Shows / Hides Snippets List
-        """
-        if self.show_snippet_list.get() == True:
-            #self.snippetList.grid()
-            self.snippetList.grid(column=0, row=0, sticky=N+S+E+W)
-            self.labelBar.config(text = "Snippet List enabled")
-
-            self.populateSnippet
-            
-        else:
-           self.snippetList.grid_remove()
-           self.labelBar.config(text = "Snippet List disabled")
-
 
     def showLabelBar(self):
         """
@@ -1983,163 +1855,22 @@ class Application(Tk):
         self.terminal.insert(1.0, out)
         self.terminal.insert(1.0, err)
 
-    #############################################################################
-    # Git commands
-    #############################################################################
-
-
-#1. Create a "repository" (project) with a git hosting tool (like Bitbucket)
-#2. Copy (or clone) the repository to your local machine
-#3. Add a file to your local repo and "commit" (save) the changes
-#4. "Push" your changes to your master branch
-#5. Make a change to your file with a git hosting tool and commit
-#6. "Pull" the changes to your local machine
-#7. Create a "branch" (version), make a change, commit the change
-#8. Open a "pull request" (propose changes to the master branch)
-#9. "Merge" your branch to the master branch
-
-
-
-##Connect - From the Team Explorer section, click the Connect... button in the GitHub invitation section to
-#login to the extension. The extension supports two-factor authentication (2fa) with GitHub and
-#stores credentials in the Windows Credential store so that Git Operations within Visual Studio work with
-#your GitHub repositories. The extension also supports logging into a GitHub Enterprise instance.
-
-##Clone - Once connected, click on the Clone button to list all repositories that you have access to on GitHub.
-##Create - The create dialog lets you create a repository on GitHub.com and locally that are connected together.
-##Publish - For a local-only repository, click on the Sync navigation item to get the GitHub publish control. This make it quick to publish your local work up to GitHub.
-##Open in Visual Studio - once you log-in with the extension, GitHub.com will show a new button next to repositories labeled "Open in VisualStudio." Click on the button to clone the repository to Visual Studio.
-##Create Gist - Create gists by using the GitHub context menu when you right-click on selected text
-##Open/Link to GitHub - Easily open on GitHub or share a link to the code you're working on by using the GitHub context menu.
-##Pull Requests - View your repository's Pull Requests and create new ones from the Pull Requests button in the Team Explorer Home
-##See Pull Request diffs - See all Pull Request changes as individual diff views and open changed files directly from the Pull Request details view
-##Review Pull Requests - Start a review and submit a review that comments, approves, or request changes to the Pull Request
-##Inline Comments - Add review comments to the Pull Request changes you're reviewing directly from the VS diff view
-##Fork - From Team Explorer Home, fork a repository you have already cloned.
-
-
-
-
-        
-
-    def gitVersion(self):
-        """
-            Check git version
-
-            git --version
-
-        """
-        self.executeCMD("git --version")
-
-
-    def gitInit(self):
-        """
-            Create a new local repository
-            git init
-
-        """
-        global repositoryFolder
-
-        repositoryFolder = simpledialog.askstring('Git', 'Set the repository name', initialvalue='', parent=self)
-
-        self.executeCMD("git init " + repositoryFolder)
-
-
-    def gitClone(self):
-        """
-            Clone the repository
-            git clone
-
-        """
-
-        global repositoryFolder
-    
-        repositoryFolder = simpledialog.askstring('Set folder name', 'Set the folder project name', initialvalue='', parent=self)
-
-        if repositoryFolder is not None:
-            self.executeCMD("mkdir " + repositoryFolder)
-
-        else:
-            pass
-         
-
-        with CD(repositoryFolder):
-
-            repositoryAddres = simpledialog.askstring('Git Clone', 'Set the address', initialvalue='https://github.com/username/username.github.io', parent=self)
-            self.executeCMD("git clone " + repositoryAddres)
-
-            # https://github.com/mikazz/RSnippets.git
-
-            global repositoryName
-            repositoryName = RSnippets
-
-            logTerminal(msg="Done")  
-        
-        
-    def gitAdd(self):
-
-        global repositoryFolder
-        print(repositoryFolder)
-
-        with CD(repositoryFolder):
-
-            self.saveFileAs
-
-            self.executeCMD("git add --all")
-
-            #self.executeCMD("touch " + self.fn)
-            
-            #process = subprocess.call("ls")
-
-            #out, err = process.communicate()
-            #errcode = process.returncode
-            #print(out)
-            #print(errcode)
-        
-        
-    def gitCommit(self):
-        """
-            Commit changes to head (but not yet to the remote repository)
-            git init
-
-        """
-        global repositoryFolder
-
-        with CD(repositoryFolder):
-
-            commitMessage = simpledialog.askstring('Git', 'Set the commit message', initialvalue='', parent=self)
-            self.executeCMD("git commit -m " + str("\"" + commitMessage + "\"" ) )
-
-
-    def gitPush(self):
-        """
-            Send changes to the master branch of your remote repository
-            git push origin master
-
-        """
-        global repositoryFolder
-
-        with CD(repositoryFolder):
-            self.executeCMD("git push origin master")
-
 
     def __init__(self):
         Tk.__init__(self)
 
-        #self.bind("<Key>", self.key)
-        #self.bind("<Button-1>", self.callback)
-
         # Set default File name to None
         self.fn = None
 
-        ################################################ Styles
+        # ----------------------------------------------------- Styles
 
         style = ttk.Style()
         style.theme_use('clam')
         
-        ################################################ Main Menu Bar
+        # ----------------------------------------------------- Main Menu Bar
         # http://effbot.org/tkinterbook/menu.htm#menu.Menu.add-method
-        
+
+        # Creates a pull-down menus, and adds them to the main menu bar
         menubar = Menu(self,
                        background=TOPBAR_BACKGROUND_COLOR,
                        foreground=TOPBAR_FOREGROUND_COLOR,
@@ -2147,9 +1878,7 @@ class Application(Tk):
                        activebackground=TOPBAR_ACTIVE_BACKGROUND_COLOR,
                        bd=0)
 
-        # Creates a pulldown menus, and adds them to the main menu bar
-
-        # Show File pulldown menu
+        # Show File pull-down menu
         main_menu = Menu(menubar,
                          tearoff=0,
                          background=PULLDOWN_BACKGROUND_COLOR,
@@ -2221,7 +1950,7 @@ class Application(Tk):
         menubar.add_cascade(label="File", menu=main_menu)
 
 
-        # Show Edit pulldown menu        
+        # Show Edit pulldown menu
         main_menu = Menu(menubar, tearoff=0, background=PULLDOWN_BACKGROUND_COLOR, foreground=PULLDOWN_FOREGROUND_COLOR,  activeforeground=PULLDOWN_ACTIVE_FOREGROUND_COLOR, activebackground=PULLDOWN_BACKGROUND_COLOR, bd=0)
 
         main_menu.add_command(label="Run Code", command=self.runCode, accelerator="Ctrl+R")
@@ -2295,8 +2024,6 @@ class Application(Tk):
 
         main_menu.add_command(label="REFRESH DIRECTORY", command=self.refresh)
 
-        main_menu.add_command(label="Populate Snippet List", command=self.populateSnippet)
-
         main_menu.add_command(label="Dialog test", command=self.showDialog)
 
         main_menu.add_command(label="Settings", command=self.showSettings)
@@ -2356,11 +2083,7 @@ class Application(Tk):
         self.new_run_clean_terminal = BooleanVar() # True/False option for cleaning terminal on run
         main_menu.add_checkbutton(selectcolor=CHECKBUTTON_SELECT_COLOR, label="Clear Terminal on run", onvalue=True, offvalue=False, variable=self.new_run_clean_terminal)
 
-        self.show_terminal_exit_codes = BooleanVar() # True/False option for showing exit codes
-        main_menu.add_checkbutton(selectcolor=CHECKBUTTON_SELECT_COLOR, label="Show Exit Codes", onvalue=True, offvalue=False, variable=self.show_terminal_exit_codes)
-
         menubar.add_cascade(label="Terminal", menu=main_menu)
-
 
         # Show Window pulldown menu
         main_menu = Menu(menubar, tearoff=0, background=PULLDOWN_BACKGROUND_COLOR, foreground=PULLDOWN_FOREGROUND_COLOR,  activeforeground=PULLDOWN_ACTIVE_FOREGROUND_COLOR, activebackground=PULLDOWN_BACKGROUND_COLOR, bd=0)
@@ -2369,18 +2092,10 @@ class Application(Tk):
         self.show_terminal.set(False)  # Default value
         main_menu.add_checkbutton(selectcolor=CHECKBUTTON_SELECT_COLOR, label="Show Terminal", onvalue=True, offvalue=False, variable=self.show_terminal, command=self.showTerminal)
 
-        self.show_system_terminal = BooleanVar() # True/False option for showing system terminal
-        self.show_system_terminal.set(False)  # Default value
-        main_menu.add_checkbutton(selectcolor=CHECKBUTTON_SELECT_COLOR, label="Show System Terminal", onvalue=True, offvalue=False, variable=self.show_system_terminal, command=self.showSystemTerminal)
-
         self.show_directory_browser = BooleanVar() # True/False option for showing browser directory 
         self.show_directory_browser.set(False) # Default value
         main_menu.add_checkbutton(selectcolor=CHECKBUTTON_SELECT_COLOR, label="Show Directory Browser", onvalue=True, offvalue=False, variable=self.show_directory_browser, command=self.showDirectoryBrowser) #, accelerator="Ctrl+2"
-        
-        self.show_snippet_list = BooleanVar()
-        self.show_snippet_list.set(False)  # Default value
-        main_menu.add_checkbutton(selectcolor=CHECKBUTTON_SELECT_COLOR, label="Show Snippet List", onvalue=True, offvalue=False, variable=self.show_snippet_list, command=self.showSnippetList)
-        
+
         self.show_label_bar = BooleanVar()
         self.show_label_bar.set(True)  # Default value
         main_menu.add_checkbutton(selectcolor=CHECKBUTTON_SELECT_COLOR, label="Show Bottom Bar", onvalue=True, offvalue=False, variable=self.show_label_bar, command=self.showLabelBar)
@@ -2391,20 +2106,7 @@ class Application(Tk):
         menubar.add_cascade(label="Window", menu=main_menu)
 
 
-        # Show Git pulldown menu
-        main_menu = Menu(menubar, tearoff=0, background=PULLDOWN_BACKGROUND_COLOR, foreground=PULLDOWN_FOREGROUND_COLOR, activeforeground=PULLDOWN_ACTIVE_FOREGROUND_COLOR, activebackground=PULLDOWN_BACKGROUND_COLOR, bd=0, relief='flat')
-        main_menu.add_command(label="Version", command=self.gitVersion)
-        main_menu.add_command(label="Clone repository", command=self.gitClone)
-        main_menu.add_command(label="Initialize empty repository", command=self.gitInit)
-        main_menu.add_command(label="Add current file", command=self.gitAdd)
-        main_menu.add_command(label="Commit changes", command=self.gitCommit)
-        main_menu.add_command(label="Push changes to master branch", command=self.gitPush)
-        menubar.add_cascade(label="Git", menu=main_menu)
-
-
-        #ttk.Style().configure("Black.TMenubutton",fill="white", border=0, relief="flat", font=('Helvetica', 8), background=DIRECTORY_BROWSER_COLOR_BACKGROUND, foreground=DIRECTORY_BROWSER_COLOR_FOREGROUND,highlightthickness=0,highlightcolor="black")
-
-        # Show Help pulldown menu        
+        # Show Help pull-down menu
         main_menu = Menu(menubar, tearoff=0, background=PULLDOWN_BACKGROUND_COLOR, foreground=PULLDOWN_FOREGROUND_COLOR, activeforeground=PULLDOWN_ACTIVE_FOREGROUND_COLOR, activebackground=PULLDOWN_BACKGROUND_COLOR, bd=0, relief='flat')
 
         main_menu.add_command(label="Readme", command=self.readme, hidemargin=True)
@@ -2412,11 +2114,8 @@ class Application(Tk):
         menubar.add_cascade(label="Help", menu=main_menu)
 
 
-
-
         # Display the menu
         self.config(menu=menubar)
-
 
 
         #ttk.Style.theme_use('clam')
@@ -2434,14 +2133,15 @@ class Application(Tk):
                 ## 'sliderlength')
                 ##        
 
-        ttk.Style().configure("Black.TLabelframe",fill="white", border=0, relief="flat", font=('Helvetica', 8), background=DIRECTORY_BROWSER_COLOR_BACKGROUND, foreground=DIRECTORY_BROWSER_COLOR_FOREGROUND,highlightthickness=0,highlightcolor="white")
+        ttk.Style().configure("Black.TLabelframe", fill="white", border=0, relief="flat", font=('Helvetica', 8), background=DIRECTORY_BROWSER_COLOR_BACKGROUND, foreground=DIRECTORY_BROWSER_COLOR_FOREGROUND, highlightthickness=0, highlightcolor="white")
 
         ################################################ Directory Browser area ################################################
 
-        self.currentDirectory
+        self.currentDirectory = None
         
         # Get the directory of the script being run:
         if self.fn is None:
+
             self.currentDirectory = os.path.dirname(os.path.abspath(__file__))
 
         else:
@@ -2452,12 +2152,12 @@ class Application(Tk):
         ################################################ Label Bottom bar ################################################
 
         self.labelBar = Label(self,
-                              relief = FLAT,
-                              anchor = W,
+                              relief=FLAT,
+                              anchor=W,
                               foreground=BOTTOMBAR_FOREGROUND_COLOR,
                               background=BOTTOMBAR_BACKGROUND_COLOR,
                               bd=0,
-                              text = 'Ready')
+                              text='Ready')
 
         #self.labelBar.grid(column=2,row=1,sticky=N+S+E+W)
 
@@ -2515,37 +2215,33 @@ class Application(Tk):
 
         ################################################ Y Scrollbar ################################################
 
-        style.layout('arrowless.Vertical.TScrollbar', 
-         [('Vertical.Scrollbar.trough',
-           {'children': [('Vertical.Scrollbar.thumb', 
-                          {'expand': '1', 'sticky': 'nswe'})],
-            'sticky': 'ns'})])
+        style.layout('arrowless.Vertical.TScrollbar',
+                     [('Vertical.Scrollbar.trough',
+                       {'children': [('Vertical.Scrollbar.thumb',
+                                      {'expand': '1', 'sticky': 'nswe'})],
+                        'sticky': 'ns'})])
 
         style.configure("Vertical.TScrollbar",
-        gripcount=0,
-        background="#181818", # tlo suwaka
-        darkcolor="#181818", # ciemne refleksy / dol i prawy bok
-        lightcolor="#181818", # jasne refleksy / gora i lewy bok
-        troughcolor="#111111",
-        bordercolor="#111111",
-        bd = 0,
-        activeforeground = "white",
-        relief = "flat")
+                        gripcount=0,
+                        background="#181818",  # scrollbar background
+                        darkcolor="#181818",  # dark reflex shadow / bottom and right side
+                        lightcolor="#181818",  # light reflex shadow / top and left side
+                        troughcolor="#111111",
+                        bordercolor="#111111",
+                        bd=0,
+                        activeforeground="white",
+                        relief="flat")
 
         style.map("arrowless.Vertical.TScrollbar",
-            background=[('pressed', 'active', '#1e1e1e'),
-                        ('active', '#191919'),
-                        ('!active', '#161616')],
-
-            #relief = [('active',"flat"), ('!active','flat')],
-            #troughcolor=[('active', "#111111"),('!active', "#111111")]
-            )
+                  background=[('pressed', 'active', '#1e1e1e'),
+                              ('active', '#191919'),
+                              ('!active', '#161616')],)
 
         self.vsb = ttk.Scrollbar(orient="vertical",
                                  command=self.tb.yview,
                                  style="arrowless.Vertical.TScrollbar")
 
-        self.tb.config(yscrollcommand=self.vsb.set )  # Add y scrollbar 
+        self.tb.config(yscrollcommand=self.vsb.set)  # Add Y scrollbar
 
         ################################################ Line Numbers ################################################
         
@@ -2581,31 +2277,7 @@ class Application(Tk):
                              insertbackground=COMMANDLINE_CURSOR_COLOR,
                              highlightthickness=0)
 
-        ################################################ Snippet List ################################################
-
-        self.snippetList = Listbox(self,
-                                   highlightthickness=0,
-                                   foreground=SNIPPETLIST_COLOR_FOREGROUND,
-                                   background=SNIPPETLIST_COLOR_BACKGROUND,
-                                   bd=0)
-
-        self.snippetList.bind('<Return>', self.addSnippet)
-        
-        ################################################ Content List ################################################
-
-##        self.contentList = Listbox(self)
-##        self.contentList.config(highlightthickness=0, foreground=SNIPPETLIST_COLOR_FOREGROUND, background=SNIPPETLIST_COLOR_BACKGROUND, bd=0)
-##
-##        self.contentList.insert(1, ["def", "def", "def"])
-##
-##        self.contentList.grid(column=5,row=0,sticky=N+S+E+W)
-##
-##        content = ["one", "two", "three", "four"]
-##
-##        for item in content:
-##            self.contentList.insert(END, item)
-
-        ################################################ Right Mouse Menu for Terminal ################################################
+        #  ------------------ Right Mouse Menu for Terminal ------------------------------------------------------------
 
         self.RightMouseMenu = Menu(self, tearoff=0, background=PULLDOWN_BACKGROUND_COLOR, foreground=PULLDOWN_FOREGROUND_COLOR, activeforeground=PULLDOWN_ACTIVE_FOREGROUND_COLOR, activebackground=PULLDOWN_BACKGROUND_COLOR, bd=0)#PULLDOWN_BACKGROUND_COLOR
         self.RightMouseMenu.add_command(label="Clear", command=self.clearTerminal )
@@ -2613,7 +2285,7 @@ class Application(Tk):
 
         self.terminal.bind("<Button-3>", self.showRightMouseMenu)
 
-        ################################################ Right Mouse Menu for DB ################################################
+        #  ------------------ Right Mouse Menu for DB ------------------------------------------------------------------
 
         self.RightMouseMenuDB = Menu(self, tearoff=0)
         self.RightMouseMenuDB.add_command(label="Next") # , command=next) etc...
@@ -2623,31 +2295,6 @@ class Application(Tk):
 
         self.tb.bind("<Button-3>", self.showRightMouseMenu)
 
-        ################################################ Autocomplete entry ################################################
-
-        lista = ['a', 'actions', 'additional', 'also', 'an', 'and', 'angle', 'are', 'as', 'be', 'bind', 'bracket', 'brackets', 'button', 'can', 'cases', 'configure', 'course', 'detail', 'enter', 'event', 'events', 'example', 'field', 'fields', 'for', 'give', 'important', 'in', 'information', 'is', 'it', 'just', 'key', 'keyboard', 'kind', 'leave', 'left', 'like', 'manager', 'many', 'match', 'modifier', 'most', 'of', 'or', 'others', 'out', 'part', 'simplify', 'space', 'specifier', 'specifies', 'string;', 'that', 'the', 'there', 'to', 'type', 'unless', 'use', 'used', 'user', 'various', 'ways', 'we', 'window', 'wish', 'you']
-        self.entry = AutocompleteEntry(lista,
-                                       self,
-                                       highlightthickness=0,
-                                       background= "blue", #"#161616",
-                                       foreground=PULLDOWN_FOREGROUND_COLOR,
-                                       bd=0)
-
-        self.entry.grid(column=2, row=3)
-
-        ################################################ System Terminal ################################################
-
-        terminalHeight = 100
-        terminalWidth = 100
-
-        self.systemTerminal = Frame(self, height=terminalHeight, width=terminalWidth)
-        self.systemTerminal.grid(column=4, row=0, sticky=N+E+S+W)
-        
-        wid = self.systemTerminal.winfo_id()
-        os.system("""xterm -into %d -bg "#181818" -geometry 40x20 -fa "Monospace" -fs 10 &""" % wid)
-
-
-    
         #self.db.grid(column=0,row=0, sticky=N+S+E+W)
 
         self.linenumbers.grid(column=1, row=0, sticky=N+E+S+W)
@@ -2656,18 +2303,10 @@ class Application(Tk):
         #self.cmdLine.grid(column=4, row=1, sticky=N+E+S+W)
 
         #self.snippetList.grid(column=0, row=0, sticky=N+S+E+W)
-        self.labelBar.grid(column=2, row=1,sticky=N+S+E+W)
+        self.labelBar.grid(column=2, row=1, sticky=N+S+E+W)
 
-        self.tb.grid(column=2,row=0, sticky=N+E+S+W)
+        self.tb.grid(column=2, row=0, sticky=N+E+S+W)
         self.vsb.grid(column=3, row=0, sticky=N+E+S+W)
-
-        #self.showDirectoryBrowser
-        #self.showTerminal
-        #self.showSnippetList
-        #self.showLabelBar
-        #self.showScrollBar
-
-
 
         #self.grid_columnconfigure(0, weight=0)
 
@@ -2683,7 +2322,6 @@ class Application(Tk):
         self.checkLexerType()
         self.title("Edit")
         self.autoSave()
-
 
 
 if __name__ == '__main__':
