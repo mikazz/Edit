@@ -19,9 +19,8 @@ import tkinter.ttk as ttk
 # Code Highlighting
 try:
     from pygments import lex
-
 except ImportError:
-    pass
+    logging.error("Lexer for code color highlighting is not available")
 
 # Printing
 try:
@@ -174,8 +173,6 @@ def main():
 if __name__ == '__main__':
     main()
   """
-
-
 
 
 class ScrollListbox(tk.Frame):
@@ -2315,7 +2312,6 @@ class Application(Tk):
 
         self.grid_rowconfigure(0, weight=2)
 
-
         # Init
         self.configure(background=WINDOW_BACKGROUND_COLOR)
         self.tb.insert(END, GREETING_MESSAGE)
@@ -2325,7 +2321,7 @@ class Application(Tk):
 
 
 if __name__ == '__main__':
-
+    logger.debug(f"Edit v{__version__} by {__author__}")
     w = Application()
 
     # Define window resolution
